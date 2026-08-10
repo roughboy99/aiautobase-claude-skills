@@ -1,0 +1,39 @@
+# Local safety-gate patterns - one .NET regex per line. Blank lines and #comments ignored.
+#
+# Copy this file to patterns.local.txt and replace the examples with YOUR private
+# strings. patterns.local.txt is gitignored, so your real paths and hostnames never
+# get published by the scanner that is supposed to protect them.
+#
+# The gate already ships with built-in patterns for generic credentials: provider
+# token prefixes, assigned passwords, private key bodies, RFC-1918 IPs, JWTs, and
+# credentials in URLs. You do NOT need to repeat those here.
+#
+# What belongs here is everything specific to you - the things no generic scanner
+# could know to look for:
+#
+#   - absolute paths on your machines (both slash directions on Windows)
+#   - internal hostnames and public IPs of servers you own
+#   - your own domains, if they should not appear outside README/LICENSE/NOTICE
+#   - personal email addresses
+#   - internal project codenames or client names
+#
+# Escape regex metacharacters: a literal dot is \. and a literal backslash is \\.
+# Prefix with (?i) for case-insensitive matching.
+
+# --- Absolute paths (examples - replace with yours) ---
+(?i)[A-Z]:[\\/]my-private-workspace
+(?i)[A-Z]:[\\/]Users[\\/]myusername
+/home/myusername\b
+
+# --- Servers you own (examples - replace with yours) ---
+\b203\.0\.113\.\d{1,3}\b
+(?i)\bmy-internal-box\.local\b
+
+# --- Your domains, if they should not leak (examples) ---
+(?i)\bmy-private-domain\.com\b
+
+# --- Personal email (examples) ---
+(?i)[A-Za-z0-9._%+-]+@my-private-domain\.com
+
+# --- Client or project names under NDA (examples) ---
+(?i)\bProjectCodename\b
