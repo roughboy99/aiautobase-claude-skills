@@ -8,7 +8,7 @@
 
 ## 1. Purpose
 
-Publish a curated, sanitized set of 11 Claude Code skills as a public GitHub repo for the
+Publish a curated, sanitized set of 12 Claude Code skills as a public GitHub repo for the
 **AI Auto Base** Skool community. The `okthanks` skill is the headliner — it is the most
 distinctive of the set and the README leads with it.
 
@@ -26,7 +26,7 @@ publication is the whole point).
 ### Success criteria
 
 1. A stranger on Windows, macOS, or Linux can run one install command and end up with 11
-   working skills in `~/.claude/skills/`.
+end up with 12 in `~/.claude/skills/`.
 2. `okthanks` runs successfully for that stranger after filling in one config file, and its
    failure message is actionable when they haven't.
 3. The published tree contains **zero** credentials, private IPs, private paths, or vault
@@ -37,15 +37,15 @@ publication is the whole point).
 
 - Not a Claude Code *plugin* / marketplace. Plain skill folders + an install script.
 - Not bilingual. English only (decided; the Spanish `okthanks` templates stay local).
-- Not a distribution channel for the other 49 skills in `~/.claude/skills/`. Those are
+- Not a distribution channel for the other 48 skills in `~/.claude/skills/`. Those are
   either third-party, Orbix-private, or too large.
 
 ---
 
-## 2. Skill roster (11)
+## 2. Skill roster (12)
 
-Audited 2026-08-10 across all 20 files in the 11 skills, by two independent methods
-(§2.1). Findings drive the "sanitizing needed" column — it is not a guess.
+Audited 2026-08-10 across all 22 files in the 12 skills, by two independent methods
+(§2.2). Findings drive the "sanitizing needed" column — it is not a guess.
 
 | Skill | Origin | Audit | Sanitizing needed |
 |---|---|---|---|
@@ -60,15 +60,38 @@ Audited 2026-08-10 across all 20 files in the 11 skills, by two independent meth
 | `ssh-remote-connection` | **`artwist-polyakov/polyakov-claude-skills` (MIT)** | **1 CRITICAL + 5 private** | **Delete 3 files** — see §5 |
 | `write-a-skill` | Hector | clean | None |
 | `find-skills` | Hector | clean | None |
+| `director` | Hector | clean | None — but needs a cost/dependency warning (§2.1) |
 
 Provenance was established by scanning every skill for `.skillfish.json`. Exactly one match:
-`ssh-remote-connection`. The other ten carry no authorship metadata and no upstream
+`ssh-remote-connection`. The other eleven carry no authorship metadata and no upstream
 attribution markers.
 
 `txt2csv` was **initially misjudged as clean by eye** and only caught by the automated
 scan. That single fact is the justification for §6 existing.
 
-### 2.1 Audit method
+### 2.1 `director` — added after the initial roster
+
+`director` was initially excluded on a **guess** that it was third-party, grouped with other
+orchestration skills. That guess was wrong: it carries no `.skillfish.json`, no authorship or
+attribution markers, and the audit reports it clean. By the same evidence standard applied to
+the other eleven, it is Hector's.
+
+It needs no sanitizing, but it is unlike every other skill in the repo in two ways that the
+README must state plainly rather than bury:
+
+1. **Token cost.** It is a three-tier fan-out (Director → sub-directors → sub-agents) with a
+   verify-and-retry loop and a peer cross-check round. Every other skill here is effectively
+   free to run; this one spawns a fleet.
+2. **Harness dependency.** It requires the `Workflow` tool, which is part of the Claude Code
+   harness and cannot be installed by this repo. Where a missing `mmdc` gives a clear error,
+   a missing `Workflow` fails at the harness level.
+
+Worth noting as a quality signal: it routes by **model tier alias** (`opus` / `sonnet` /
+`haiku`) rather than pinning version-stamped model IDs. Pinned IDs silently 404 once a model
+retires; tier aliases don't. It also caps retries at 2, honors the runtime concurrency cap,
+is budget-aware, and forbids silent truncation of capped sub-goals.
+
+### 2.2 Audit method
 
 Two passes, because either alone has a blind spot:
 
@@ -90,22 +113,26 @@ token formats — including this spec.
 
 Manual eyeball confirmations: `connect.sh` is fully env-driven with no hardcoded host, user,
 or key path. `plantuml/SKILL.md:45` is a public GitHub URL. Zero `.pem`/`.key`/`.pfx`/`id_*`
-files exist anywhere in the 11 skills; exactly one real `.env`, in `ssh-remote-connection`.
+files exist anywhere in the 12 skills; exactly one real `.env`, in `ssh-remote-connection`.
 
 ---
 
 ## 3. Repo layout
 
+As built (28 tracked files):
+
 ```
 aiautobase-claude-skills/
-├── README.md                      okthanks hero section; other 10 below it
-├── LICENSE                        MIT — Hector Diaz / Orbix Automation Solutions
+├── README.md                      okthanks hero section; other 11 below it
+├── LICENSE                        MIT, verbatim - see note below
 ├── NOTICE                         MIT attribution: artwist-polyakov
-├── .gitignore
+├── .gitignore                     blocks okthanks/config.json + patterns.local.txt
 ├── install.ps1                    Windows
 ├── install.sh                     macOS / Linux
 ├── scripts/
-│   └── safety-gate.ps1            pre-push secret/private-data scan (§6)
+│   ├── safety-gate.ps1            pre-push scan (§6); -SelfTest proves it fires
+│   ├── patterns.example.txt       committed template with generic placeholders
+│   └── patterns.local.txt         GITIGNORED - the real patterns
 ├── docs/
 │   ├── QUICKSTART.md
 │   ├── WHAT-ARE-SKILLS.md         for non-technical Skool members
@@ -113,18 +140,36 @@ aiautobase-claude-skills/
 └── skills/
     ├── okthanks/
     │   ├── SKILL.md
-    │   ├── README.md
     │   ├── config.example.json
-    │   ├── templates/
-    │   │   ├── session-pointer.md      the .claude/SESSION.md shape
-    │   │   ├── session-archive.md      the .claude/sessions/DATE-slug.md shape
-    │   │   └── vault-log.md            the Obsidian vault entry shape
-    │   └── gitignore-template.txt      generic; replaces the .staging/ dependency
-    ├── mermaid/  plantuml/  python-diagrams/  go-diagrams/
-    ├── markmap/  json-canvas/  txt2csv/
+    │   └── gitignore-template.txt      bundled; replaces the .staging/ dependency
+    ├── director/
+    │   ├── SKILL.md
+    │   └── references/director-workflow.js
+    ├── json-canvas/
+    │   ├── SKILL.md
+    │   └── references/EXAMPLES.md
     ├── ssh-remote-connection/
+    │   ├── SKILL.md
+    │   ├── .gitignore
+    │   ├── config/.env.example         no .env - deleted, see §5
+    │   └── scripts/connect.sh
+    ├── mermaid/  plantuml/  python-diagrams/  go-diagrams/
+    ├── markmap/  txt2csv/
     └── write-a-skill/  find-skills/
 ```
+
+**Deviations from the original plan, and why:**
+
+- **No `skills/okthanks/README.md`.** The main README already covers `okthanks` at length and
+  `SKILL.md` carries the operational detail. A third document would have been a third place
+  for the same facts to drift out of sync.
+- **No `skills/okthanks/templates/` directory.** The plan was to extract the session-log,
+  pointer, and archive shapes into separate template files. They stayed inline in `SKILL.md`
+  because the skill reads them in the same pass it reads its instructions — splitting them
+  would have added file reads without reducing what gets loaded.
+- **`LICENSE` must be verbatim MIT.** A trailing "see NOTICE" line broke GitHub's license
+  detector and the repo displayed as "Other", which reads as a licensing red flag. The
+  third-party pointer lives in `NOTICE` instead. Verified: GitHub now reports `mit`.
 
 ---
 

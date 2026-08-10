@@ -1,6 +1,6 @@
 # Claude Code Skills — AI Auto Base
 
-Eleven skills I actually use. The first one is the reason this repo exists.
+Twelve skills I actually use. The first one is the reason this repo exists.
 
 ---
 
@@ -127,11 +127,12 @@ misbehaves.
 
 ---
 
-## The other ten
+## The other eleven
 
 | Skill | What it does | Needs |
 |---|---|---|
 | [`txt2csv`](skills/txt2csv/) | Paste a messy social post full of handles, timestamps and "Reply Share" junk, get a clean CSV of the actual content | nothing |
+| [`director`](skills/director/) | Three-tier multi-agent orchestration for genuinely hard tasks — **read the warning below before running it** | Workflow tool |
 | [`mermaid`](skills/mermaid/) | Flowcharts, sequence diagrams, Gantt, ER, mind maps | `mmdc` |
 | [`plantuml`](skills/plantuml/) | UML and C4 architecture diagrams | Java + PlantUML JAR |
 | [`python-diagrams`](skills/python-diagrams/) | AWS / GCP / Azure / Kubernetes architecture diagrams | Python + Graphviz |
@@ -144,6 +145,30 @@ misbehaves.
 
 Start with `write-a-skill` and `find-skills` if you want to stop downloading other people's
 skills and write your own. That's the better end state.
+
+### Before you run `director`
+
+This one is different from the rest, so read this first.
+
+`director` decomposes a task, hands each piece to a sub-director, and each of those fans out
+to sub-agents — then verifies the work, retries what fails, and has the sub-directors
+cross-check each other. Three tiers, each on the model that suits its job.
+
+When it fits, it's genuinely better than one agent grinding through a hard problem alone.
+
+**Two things to know:**
+
+- **It costs real tokens.** Every other skill here is effectively free. This one spawns a
+  fleet. Running `/director` on something a single agent would handle in one pass is a waste
+  of your budget — the skill's own description says so and refuses that framing, but it'll
+  still do what you ask.
+- **It needs the `Workflow` tool.** That's part of the Claude Code harness, not something
+  this repo can install. If your setup doesn't expose Workflow, `director` can't run at all
+  — and it'll fail at the harness level rather than with a friendly message.
+
+Use it for: a refactor spanning many files, an audit where you want findings independently
+verified before you trust them, a migration with dozens of call sites. Not for: one bug, one
+question, one file.
 
 ---
 

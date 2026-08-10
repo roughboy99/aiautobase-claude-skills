@@ -15,6 +15,7 @@ REPO_URL="https://github.com/roughboy99/aiautobase-claude-skills.git"
 SKILLS=(
   okthanks mermaid plantuml python-diagrams go-diagrams markmap
   json-canvas txt2csv ssh-remote-connection write-a-skill find-skills
+  director
 )
 
 # Colors only when attached to a terminal.

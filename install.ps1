@@ -15,7 +15,8 @@ $ErrorActionPreference = 'Stop'
 $RepoUrl = 'https://github.com/roughboy99/aiautobase-claude-skills.git'
 $Skills  = @(
     'okthanks','mermaid','plantuml','python-diagrams','go-diagrams','markmap',
-    'json-canvas','txt2csv','ssh-remote-connection','write-a-skill','find-skills'
+    'json-canvas','txt2csv','ssh-remote-connection','write-a-skill','find-skills',
+    'director'
 )
 
 function Write-Step($msg) { Write-Host "==> $msg" -ForegroundColor Cyan }

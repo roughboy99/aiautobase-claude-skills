@@ -69,6 +69,7 @@ Nothing to configure. Just ask:
 | paste a messy social post, "make this a CSV" | `txt2csv` |
 | "check the logs on my server" | `ssh-remote-connection` |
 | "is there a skill for X?" | `find-skills` |
+| "use the director on this refactor" | `director` (see the cost note in the README first) |
 
 Some need a binary installed — `mmdc` for mermaid, Graphviz for the diagram skills, Java
 for PlantUML. Each skill's `SKILL.md` says which.
