@@ -18,9 +18,10 @@ repo is the one documented exception to the workspace's no-remotes policy, becau
 publication is the whole point).
 
 > **Note on this document.** It ships in the public repo, so it deliberately refers to
-> private paths and hosts by placeholder (`<vault-path>`, `<workspace-root>`, `10.0.0.x`)
-> rather than by value. The safety gate in §6 therefore needs no exception for `docs/` —
-> if this file ever trips the gate, the file is wrong, not the gate.
+> private paths and hosts by placeholder (`<vault-path>`, `<workspace-root>`,
+> `<private-lan-ip>`) rather than by value — a placeholder that preserves the real subnet
+> still discloses the subnet. The safety gate in §6 therefore needs no exception for
+> `docs/`: if this file ever trips the gate, the file is wrong, not the gate.
 
 ### Success criteria
 
@@ -43,23 +44,53 @@ publication is the whole point).
 
 ## 2. Skill roster (11)
 
-| Skill | Origin | Sanitizing needed |
-|---|---|---|
-| **`okthanks`** ⭐ | Hector | **Substantial** — see §4 |
-| `mermaid` | Hector | None |
-| `plantuml` | Hector | None |
-| `python-diagrams` | Hector | None |
-| `go-diagrams` | Hector | None |
-| `markmap` | Hector | None |
-| `json-canvas` | Hector | None |
-| `txt2csv` | Hector | None |
-| `ssh-remote-connection` | **`artwist-polyakov/polyakov-claude-skills` (MIT)** | **Delete 3 files** — see §5 |
-| `write-a-skill` | Hector | None |
-| `find-skills` | Hector | None |
+Audited 2026-08-10 across all 20 files in the 11 skills, by two independent methods
+(§2.1). Findings drive the "sanitizing needed" column — it is not a guess.
+
+| Skill | Origin | Audit | Sanitizing needed |
+|---|---|---|---|
+| **`okthanks`** ⭐ | Hector | 15 private-path hits | **Substantial** — see §4 |
+| `mermaid` | Hector | clean | None |
+| `plantuml` | Hector | clean | None |
+| `python-diagrams` | Hector | clean | None |
+| `go-diagrams` | Hector | clean | None |
+| `markmap` | Hector | clean | None |
+| `json-canvas` | Hector | clean | None |
+| `txt2csv` | Hector | **5 private-path hits** | Replace workspace paths with placeholders |
+| `ssh-remote-connection` | **`artwist-polyakov/polyakov-claude-skills` (MIT)** | **1 CRITICAL + 5 private** | **Delete 3 files** — see §5 |
+| `write-a-skill` | Hector | clean | None |
+| `find-skills` | Hector | clean | None |
 
 Provenance was established by scanning every skill for `.skillfish.json`. Exactly one match:
 `ssh-remote-connection`. The other ten carry no authorship metadata and no upstream
 attribution markers.
+
+`txt2csv` was **initially misjudged as clean by eye** and only caught by the automated
+scan. That single fact is the justification for §6 existing.
+
+### 2.1 Audit method
+
+Two passes, because either alone has a blind spot:
+
+1. **Known-shape pass** — 19 named patterns: credential-file names, provider token prefixes
+   *followed by a payload*, assigned-value passwords/secrets, RFC-1918 and known-VPS IPs,
+   private paths, personal emails, brand domains.
+2. **Format-agnostic pass** — catches secrets whose shape was not anticipated: JWTs, URLs
+   carrying credentials in the authority segment (a user and a password before the `@`), PEM
+   key bodies, hex digests ≥32 chars, and Shannon-entropy ≥3.9 mixed-class strings ≥20 chars.
+
+Pass 2 found three 43-char high-entropy credentials in the `ssh-remote-connection` config
+files that pass 1's named patterns did not match, and one benign long URL path in
+`plantuml/SKILL.md` (a `raw.githubusercontent.com` C4-PlantUML include — verified by eye,
+false positive).
+
+**A token prefix alone is not a secret.** The gate must require prefix + payload
+(`gho_[A-Za-z0-9_\-]{15,}`, not `gho_`), or it flags every document that merely *discusses*
+token formats — including this spec.
+
+Manual eyeball confirmations: `connect.sh` is fully env-driven with no hardcoded host, user,
+or key path. `plantuml/SKILL.md:45` is a public GitHub URL. Zero `.pem`/`.key`/`.pfx`/`id_*`
+files exist anywhere in the 11 skills; exactly one real `.env`, in `ssh-remote-connection`.
 
 ---
 
@@ -174,8 +205,8 @@ verbatim:
 **Delete outright** (do not edit — these contain live data):
 
 - `config/.env` — real credentials
-- `config/comfyui-142.json` — a real LAN host (`10.0.0.x`) with SSH details
-- `config/mac-build-host.json` — a real LAN host (`10.0.0.x`) with SSH details
+- `config/comfyui-142.json` — a real LAN host plus a 43-char high-entropy credential
+- `config/mac-build-host.json` — a real LAN host plus a 43-char high-entropy credential
 
 **Keep:** `SKILL.md`, `scripts/connect.sh`, `config/.env.example` (already generic and
 correct), `.gitignore`.
@@ -183,9 +214,12 @@ correct), `.gitignore`.
 **Remove:** `.skillfish.json` — it is install-tracking metadata for a different registry and
 would be misleading in this repo. Its information moves to `NOTICE` where it belongs.
 
-**Verify:** `scripts/connect.sh` and `SKILL.md` matched the credential grep. Both must be
-re-read line by line and any hardcoded host, user, or path replaced with the `.env`
-variable reference the skill already documents.
+**Already verified clean** (2026-08-10, read line by line): `scripts/connect.sh` is fully
+env-driven — it sources `config/.env`, validates `SSH_HOST`/`SSH_USER`/`SSH_KEY_PATH`, and
+exits with setup instructions if any is missing. No hardcoded host, user, or key path.
+`SKILL.md` likewise references only variable names. An earlier crude grep flagged both for
+the word "password"; that was the string `$SSH_KEY_PASSWORD`, a variable reference, not a
+value.
 
 **Attribute:** `NOTICE` carries the upstream MIT notice for
 `artwist-polyakov/polyakov-claude-skills`, and the skill's row in the README links to the
@@ -203,7 +237,13 @@ original repo.
 | the Obsidian vault root, both slash forms | vault path |
 | the workspace root, both slash forms | workspace path |
 | the Windows user-profile path, both slash forms | user path |
-| `getorbix\.com` outside README/LICENSE/NOTICE | brand infra references |
+| provider token prefixes **plus ≥15 payload chars** | real tokens, not format discussions |
+| assigned-value `password` / `passphrase` / `secret` | credentials |
+| `BEGIN … PRIVATE KEY` | key bodies |
+| any `.env` file whose name is not `.env.example` | credential files |
+| JWTs, URL-authority credentials, hex ≥32, entropy ≥3.9 | unanticipated secret shapes |
+| personal email addresses | PII |
+| brand domains outside README/LICENSE/NOTICE | brand infra references |
 | `gho_` , `sk-` , `ghp_` | tokens |
 | `password\s*[=:]\s*\S` | credentials |
 | any `.env` file whose name is not `.env.example` | credential files |
