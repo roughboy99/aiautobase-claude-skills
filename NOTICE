@@ -1,6 +1,9 @@
-This repository is licensed under the MIT License (see LICENSE).
+This repository is licensed under the MIT License (see LICENSE), Copyright (c) 2026
+Hector Diaz / Orbix Automation Solutions.
 
 It additionally redistributes third-party work, listed below with its own notice.
+Portions of this repository are therefore covered by the terms below rather than,
+or in addition to, the top-level LICENSE.
 
 --------------------------------------------------------------------------------
 skills/ssh-remote-connection/
