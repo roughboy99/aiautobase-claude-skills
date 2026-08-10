@@ -1,0 +1,14 @@
+# okthanks: user's private config
+skills/okthanks/config.json
+
+# safety gate: private search patterns
+scripts/patterns.local.txt
+
+# credentials — never commit
+.env
+**/.env
+!**/.env.example
+
+# OS junk
+Thumbs.db
+.DS_Store
