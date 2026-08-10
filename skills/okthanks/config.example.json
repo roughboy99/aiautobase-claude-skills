@@ -1,0 +1,20 @@
+{
+  "_comment": "Copy this file to config.json and fill in vault_path + workspace_root. Both are REQUIRED; the skill aborts with setup instructions if either is blank.",
+
+  "vault_path": "",
+  "sessions_subdir": "Sessions",
+  "log_file": "log.md",
+
+  "workspace_root": "",
+
+  "project_pointer_file": ".claude/SESSION.md",
+  "project_sessions_subdir": ".claude/sessions",
+  "project_history_rows": 10,
+  "inject_claude_md_pointer": true,
+
+  "git": {
+    "mode": "plain",
+    "push": false,
+    "gcommit_module": ""
+  }
+}

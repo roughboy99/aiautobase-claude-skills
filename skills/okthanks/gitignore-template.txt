@@ -1,0 +1,73 @@
+# Bundled by the okthanks skill. Copied into a repo only when okthanks runs
+# `git init` on a folder that has no .gitignore of its own. Never overwrites one.
+
+# --- Secrets: keep these first, they matter most ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+id_rsa
+id_ed25519
+credentials.json
+secrets.json
+
+# --- Node ---
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+dist/
+build/
+.next/
+.nuxt/
+.turbo/
+coverage/
+*.tsbuildinfo
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# --- Rust / Go / Java ---
+target/
+*.rs.bk
+vendor/
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+.gradle/
+
+# --- Editors ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# --- OS junk ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Logs / temp ---
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+
+# NOTE: .claude/ is deliberately NOT ignored. okthanks writes SESSION.md and
+# sessions/ there, and they are meant to be committed - that is the handoff.
