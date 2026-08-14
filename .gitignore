@@ -12,3 +12,9 @@ scripts/patterns.local.txt
 # OS junk
 Thumbs.db
 .DS_Store
+
+# Local session continuity (okthanks). NEVER publish - this repo is public and
+# the handoff necessarily names the maintainer's local launch folder, which the
+# safety gate classifies as private data. These files still work locally.
+.claude/
+CLAUDE.md

@@ -220,3 +220,25 @@ If one of these saves you an afternoon, tell me which one — that's how I know 
 next.
 
 — Hector
+
+---
+
+## 📋 Latest Changes
+
+<!-- LATEST:BEGIN -->
+## [0.1.1] - 2026-08-14
+
+### Maintenance
+- gitignore local session continuity files
+
+
+
+## [0.1.0] - 2026-08-14
+
+### Added
+- Initial release. Project established with local-git versioning.
+<!-- LATEST:END -->
+
+See full [CHANGELOG.md](CHANGELOG.md) for complete history.
+
+
