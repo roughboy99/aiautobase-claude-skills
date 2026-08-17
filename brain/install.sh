@@ -315,8 +315,16 @@ else
   warn "the 'brain' database is missing — check: docker compose logs postgres"
 fi
 
-code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:5678/healthz 2>/dev/null || echo 000)
-[ "$code" = "200" ] && ok "n8n healthy (/healthz 200)" || warn "/healthz returned $code"
+# On a RE-RUN the migration wait above returns instantly (the tables already
+# exist) while the recreated n8n container is still booting, so give /healthz
+# up to 90s instead of a single shot.
+code=000
+for _ in $(seq 1 18); do
+  code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:5678/healthz 2>/dev/null) || code=000
+  [ "$code" = "200" ] && break
+  sleep 5
+done
+[ "$code" = "200" ] && ok "n8n healthy (/healthz 200)" || warn "/healthz returned $code after 90s — check: docker compose logs n8n"
 
 # ── 9. demo workflow — runs with NO credentials of yours ─────────────────────
 # The point: you can record the whole pipeline working without ever opening an
@@ -476,7 +484,7 @@ cat <<EOF
 ${B}Done.${N}
 
   Open       ${B}http://localhost:5678${N}   (create your owner account on first visit)
-             note: ${D}http://localhost:5678/ returns 404 — that's normal on n8n 2.x,
+             note: ${D}http://localhost:5678/ may return 404 — that's normal on some n8n 2.x builds,
              the editor lives at /home/workflows${N}
 
   Folder     $(pwd)

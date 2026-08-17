@@ -226,6 +226,13 @@ next.
 ## 📋 Latest Changes
 
 <!-- LATEST:BEGIN -->
+## [0.2.2] - 2026-08-16
+
+### Fixed
+- brain installer waits up to 90s for /healthz on re-run instead of a single shot
+
+
+
 ## [0.2.1] - 2026-08-16
 
 ### Fixed
@@ -254,6 +261,7 @@ next.
 <!-- LATEST:END -->
 
 See full [CHANGELOG.md](CHANGELOG.md) for complete history.
+
 
 
 
