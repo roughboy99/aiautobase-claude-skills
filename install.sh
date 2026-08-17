@@ -45,15 +45,21 @@ if [ -n "$SELF_DIR" ] && [ -d "$SELF_DIR/skills" ]; then
   SOURCE_DIR="$SELF_DIR"
   step "Installing from local clone: $SOURCE_DIR"
 else
-  command -v git >/dev/null 2>&1 || {
-    echo "Error: git is required to install this way." >&2
-    echo "Install git, or clone the repo manually and run ./install.sh from inside it." >&2
-    exit 1
-  }
   TEMP_CLONE="$(mktemp -d "${TMPDIR:-/tmp}/aiab-skills-XXXXXXXX")"
-  step "Downloading $REPO_URL"
-  git clone --depth 1 --quiet "$REPO_URL" "$TEMP_CLONE"
-  SOURCE_DIR="$TEMP_CLONE"
+  if command -v git >/dev/null 2>&1; then
+    step "Downloading $REPO_URL"
+    git clone --depth 1 --quiet "$REPO_URL" "$TEMP_CLONE"
+    SOURCE_DIR="$TEMP_CLONE"
+  else
+    # A fresh VPS or a minimal Debian/Ubuntu often has no git yet. Don't make
+    # that the member's problem: fall back to GitHub's tarball, which only
+    # needs curl and tar - both present on anything that can run this script.
+    TARBALL_URL="${REPO_URL%.git}/archive/refs/heads/main.tar.gz"
+    step "git not found - downloading tarball instead: $TARBALL_URL"
+    command -v tar >/dev/null 2>&1 || { echo "Error: need git or tar to install." >&2; exit 1; }
+    curl -fsSL "$TARBALL_URL" | tar -xz -C "$TEMP_CLONE" --strip-components=1
+    SOURCE_DIR="$TEMP_CLONE"
+  fi
 fi
 
 SRC_SKILLS="$SOURCE_DIR/skills"

@@ -7,6 +7,12 @@ Versioning: [SemVer](https://semver.org).
 
 <!-- CHANGELOG:ENTRIES -->
 
+## [0.2.1] - 2026-08-16
+
+### Fixed
+- installers fall back to tarball/zip when git is missing (fresh VPS, fresh Windows)
+
+
 ## [0.2.0] - 2026-08-16
 
 ### Added
@@ -23,5 +29,6 @@ Versioning: [SemVer](https://semver.org).
 
 ### Added
 - Initial release. Project established with local-git versioning.
+
 
 

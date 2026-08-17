@@ -34,14 +34,26 @@ if ($PSScriptRoot -and (Test-Path (Join-Path $PSScriptRoot 'skills'))) {
     Write-Step "Installing from local clone: $sourceDir"
 }
 else {
-    if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-        throw "git is required to install this way. Install git, or clone the repo manually and run .\install.ps1 from inside it."
-    }
     $tempClone = Join-Path ([System.IO.Path]::GetTempPath()) ("aiab-skills-" + [guid]::NewGuid().ToString('N').Substring(0,8))
-    Write-Step "Downloading $RepoUrl"
-    git clone --depth 1 --quiet $RepoUrl $tempClone
-    if ($LASTEXITCODE -ne 0) { throw "git clone failed." }
-    $sourceDir = $tempClone
+    if (Get-Command git -ErrorAction SilentlyContinue) {
+        Write-Step "Downloading $RepoUrl"
+        git clone --depth 1 --quiet $RepoUrl $tempClone
+        if ($LASTEXITCODE -ne 0) { throw "git clone failed." }
+        $sourceDir = $tempClone
+    }
+    else {
+        # No Git for Windows yet - common on a fresh machine. Fall back to the
+        # GitHub zip, which needs nothing but PowerShell itself.
+        $zipUrl = ($RepoUrl -replace '\.git$', '') + '/archive/refs/heads/main.zip'
+        Write-Step "git not found - downloading zip instead: $zipUrl"
+        New-Item -ItemType Directory -Force $tempClone | Out-Null
+        $zip = Join-Path $tempClone 'repo.zip'
+        Invoke-WebRequest -Uri $zipUrl -OutFile $zip -UseBasicParsing
+        Expand-Archive -Path $zip -DestinationPath $tempClone -Force
+        $inner = Get-ChildItem $tempClone -Directory | Where-Object { Test-Path (Join-Path $_.FullName 'skills') } | Select-Object -First 1
+        if (-not $inner) { throw "zip download did not contain a skills/ directory." }
+        $sourceDir = $inner.FullName
+    }
 }
 
 $srcSkills = Join-Path $sourceDir 'skills'
