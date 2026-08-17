@@ -226,6 +226,13 @@ next.
 ## 📋 Latest Changes
 
 <!-- LATEST:BEGIN -->
+## [0.2.0] - 2026-08-16
+
+### Added
+- add Class 2 brain stack installer (n8n + Postgres) under brain/
+
+
+
 ## [0.1.1] - 2026-08-14
 
 ### Maintenance
@@ -240,5 +247,6 @@ next.
 <!-- LATEST:END -->
 
 See full [CHANGELOG.md](CHANGELOG.md) for complete history.
+
 
 
