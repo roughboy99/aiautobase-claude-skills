@@ -7,6 +7,12 @@ Versioning: [SemVer](https://semver.org).
 
 <!-- CHANGELOG:ENTRIES -->
 
+## [0.2.3] - 2026-08-22
+
+### Fixed
+- brain installer chmods schema.sql so a restrictive umask cannot silently skip database creation
+
+
 ## [0.2.2] - 2026-08-16
 
 ### Fixed

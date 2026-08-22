@@ -193,6 +193,10 @@ WHERE  received_at > NOW() - INTERVAL '7 days'
 GROUP  BY account, category
 ORDER  BY n DESC;
 SQLEOF
+# Postgres reads this INSIDE the container as uid 70, not as you. A restrictive
+# umask (0007/0077) makes the file unreadable there and initdb silently skips it
+# with "Permission denied" -- the brain database then never gets created.
+chmod 644 schema.sql
 ok "schema.sql written"
 
 # ── 5. docker-compose.yml ────────────────────────────────────────────────────
