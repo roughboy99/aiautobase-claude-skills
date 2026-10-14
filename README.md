@@ -226,6 +226,13 @@ next.
 ## 📋 Latest Changes
 
 <!-- LATEST:BEGIN -->
+## [0.2.4] - 2026-10-14
+
+### Fixed
+- brain installer sets WEBHOOK_URL alongside N8N_WEBHOOK_URL - n8n 2.9.x reads only WEBHOOK_URL, so Telegram got a localhost webhook
+
+
+
 ## [0.2.3] - 2026-08-22
 
 ### Fixed
@@ -251,23 +258,10 @@ next.
 
 ### Added
 - add Class 2 brain stack installer (n8n + Postgres) under brain/
-
-
-
-## [0.1.1] - 2026-08-14
-
-### Maintenance
-- gitignore local session continuity files
-
-
-
-## [0.1.0] - 2026-08-14
-
-### Added
-- Initial release. Project established with local-git versioning.
 <!-- LATEST:END -->
 
 See full [CHANGELOG.md](CHANGELOG.md) for complete history.
+
 
 
 

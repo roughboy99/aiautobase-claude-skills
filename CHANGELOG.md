@@ -7,6 +7,12 @@ Versioning: [SemVer](https://semver.org).
 
 <!-- CHANGELOG:ENTRIES -->
 
+## [0.2.4] - 2026-10-14
+
+### Fixed
+- brain installer sets WEBHOOK_URL alongside N8N_WEBHOOK_URL - n8n 2.9.x reads only WEBHOOK_URL, so Telegram got a localhost webhook
+
+
 ## [0.2.3] - 2026-08-22
 
 ### Fixed
@@ -41,6 +47,7 @@ Versioning: [SemVer](https://semver.org).
 
 ### Added
 - Initial release. Project established with local-git versioning.
+
 
 
 
